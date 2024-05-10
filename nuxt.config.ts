@@ -17,11 +17,24 @@ export default defineNuxtConfig({
     "/": {
       ssr: false,
     },
+    "/posts": { swr: 3600 },
+    "/posts/**": { swr: 3600 },
   },
   fonts: {
     families: [
       { name: "Briem Hand", provider: "google" },
       { name: "Teachers", provider: "google" },
     ],
+  },
+  image: {
+    alias: {
+      picsum: "https://picsum.photos",
+      pravatar: "https://i.pravatar.cc",
+    },
+  },
+  site: {
+    url: "http://localhost:3000",
+    name: "Vue School Blog",
+    description: "Test by Benjamin Alamu for Vue School",
   },
 });

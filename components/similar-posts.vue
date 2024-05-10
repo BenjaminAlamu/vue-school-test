@@ -10,7 +10,7 @@
       <main
         v-for="(posts, index) in similarPosts"
         :key="posts.id"
-        class="w-full sm:w-1/2 lg:w-1/3 my-8 px-4"
+        class="w-full sm:w-1/2 lg:w-1/3 my-4 px-4"
       >
         <PostCard :post="posts" :index="index" />
       </main>
