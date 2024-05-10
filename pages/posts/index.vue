@@ -1,21 +1,77 @@
 <template>
-  <div class="h-screen flex justify-center items-center">
+  <div class="container mx-auto">
     <div>
-      <h1 class="text-2xl">Display The Paginated Posts Here</h1>
-      <ul class="list-disc list-inside ml-10">
-        <li>Keep performance in mind</li>
-        <li>Make sure to display optimized images</li>
-        <li>Paginate according to your desired strategy</li>
-        <li>Provide a sort order control</li>
-        <li>Store the sort order in the URL</li>
-        <li>Make it look good 💪</li>
-        <li>
-          Then
-          <NuxtLink class="text-blue-500 underline" to="/posts/hello">
-            go to the next task (displaying the individual post)</NuxtLink
-          >
-        </li>
-      </ul>
+      <h1 class="text-2xl md:text-5xl text-center font-briem py-6">
+        Vue School Blog
+      </h1>
     </div>
+
+    <PostFilters
+      @toggleSort="toggleSortMode($event)"
+      :activeSort="activeSortParams"
+    />
+    <SkeletonCard v-if="pending" />
+    <div class="flex flex-wrap w-full">
+      <main
+        v-for="(posts, index) in postData"
+        :key="posts.id"
+        class="w-full sm:w-1/2 lg:w-1/3 2xl:w-1/4 my-8 px-4"
+      >
+        <PostCard :post="posts" :index="index" />
+      </main>
+    </div>
+    <p ref="scrollerTarget"></p>
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref, toRaw } from "vue";
+import PostCard from "../../components/post-card.vue";
+import SkeletonCard from "../../components/skeleton-card.vue";
+import PostFilters from "../../components/post-filters.vue";
+import { useInfiniteScroll } from "@vueuse/core";
+
+const route = useRoute();
+const router = useRouter();
+
+const queryParams = useRoute().query;
+
+const scrollerTarget = ref(null);
+const activeSortParams = ref(queryParams?.order || "newestFirst");
+const postData = ref([]);
+
+const getPostData = async (offset) => {
+  const { data, pending } = await useFetch("/api/posts", {
+    query: {
+      limit: 12,
+      offset,
+      include: "user",
+      order: activeSortParams.value,
+      select: "id,title,excerpt,publishedAt,image",
+    },
+  });
+  postData.value = [...postData.value, ...toRaw(data.value)];
+};
+
+const getUsersOnScroll = async () => {
+  getPostData(postData.value.length);
+};
+
+const toggleSortMode = async (value: string) => {
+  activeSortParams.value = value;
+  await router.push({
+    query: {
+      ...route.query,
+      order: activeSortParams.value,
+    },
+  });
+  postData.value = [];
+  getPostData();
+};
+
+getPostData();
+
+useInfiniteScroll(scrollerTarget, async () => {
+  await getUsersOnScroll();
+});
+</script>

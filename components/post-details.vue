@@ -18,10 +18,10 @@
 
 <script setup lang="ts">
 import { useDateFormat } from "@vueuse/core";
-import { User } from "@/types";
+import type { User } from "~/types";
 
-const props = defineProps({
-  user: User,
-  publishedAt: Number,
-});
+defineProps<{
+  user: User;
+  publishedAt: number;
+}>();
 </script>

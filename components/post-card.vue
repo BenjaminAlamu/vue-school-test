@@ -24,14 +24,12 @@
   </main>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import PostDetails from "./post-details.vue";
-import { Post } from "@/types";
+import type { Post } from "~/types";
 
-const props = defineProps({
-  post: Post,
-  index: Number,
-});
+defineProps<{
+  post: Post;
+  index: number;
+}>();
 </script>
-
-<style lang="scss" scoped></style>
